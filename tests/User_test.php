@@ -16,3 +16,10 @@ if ($oUser instanceof User){
 //TODO tests get and set function
 //TODO Write function to tests
 
+$oUser->setAddress("Piękna");
+$oUser->setCredits(100);
+$oUser->setName("Dominik");
+$oUser->setHashedPassword("123");
+$oUser->setSurname("Grabiński");
+
+var_dump($oUser);
