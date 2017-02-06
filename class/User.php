@@ -13,6 +13,7 @@ class User {
     private $surname;
     private $credits;
     private $hashedPassword;
+    static public $connection;
     
     public function __construct() {
         $this->id = -1;
