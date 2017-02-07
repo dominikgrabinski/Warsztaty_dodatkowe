@@ -32,15 +32,25 @@ if(isset($arrayRequest[6])){
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET'){
     
-    if($_SERVER['REQUEST_URI'] == '/CL/Warsztaty_dodatkowe/warsztaty_dodatkowe/Warsztaty_dodatkowe/router.php'){
-        $newUser = new User();
+    if($requestClass == 'user'){
+        $oUser = new User();
+        $userData = $oUser->loadFromDb(2);
         
-    //    echo 'Chodzi o usera';
-    }else{
+        var_dump($userData);
+        
+    } else {
+        
+        
+    }
+    
+//    if($_SERVER['REQUEST_URI'] == '/CL/Warsztaty_dodatkowe/warsztaty_dodatkowe/Warsztaty_dodatkowe/router.php'){
+//        $newUser = new User();
+//        
+//    //    echo 'Chodzi o usera';
+//    }else{
         
     //    echo 'Nie chodzi o usera';
     
         
     }
     
-}

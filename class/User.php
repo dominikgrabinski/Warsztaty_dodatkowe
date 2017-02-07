@@ -77,7 +77,7 @@ class User {
        $sql = "SELECT * FROM user WHERE id = $idUser";
        
         if($result = self::$connection->query($sql)){
-            $row = $result->fetch_assoc();
+            $row = $result->fetch(PDO::FETCH_ASSOC);
             
             $this->id = $row['id'];
             $this->name = $row['name'];
