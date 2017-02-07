@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'){
 
                    $allUsers = User::loadAllFromDb();
                    print_r(json_encode($allUsers));
-                   var_dump($allUsers);
+                   print_r($allUsers);
             }
        
     }
