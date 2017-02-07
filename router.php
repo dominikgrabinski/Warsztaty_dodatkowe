@@ -5,6 +5,7 @@ include 'config/connection.php';
 $request = '';
 $arrayRequest = [];
 $requestClass = '';
+$requestParam = null;
 
 //var_dump($_SERVER['REQUEST_METHOD']);
 //var_dump($_SERVER['REQUEST_URI']);
@@ -19,7 +20,7 @@ if(isset($arrayRequest[6])){
 }
 
 if(isset($arrayRequest[7])){
-    $requestParam = intval( $arrayRequest[7]);
+    $requestParam = intval($arrayRequest[7]);
 } else {
     echo "nie podałeś parametru";
 }
@@ -43,22 +44,23 @@ if(isset($arrayRequest[7])){
 if ($_SERVER['REQUEST_METHOD'] == 'GET'){
     
     if($requestClass == 'user'){
-        
+                
         //TODO poszukać lepszego rozwiązania
-        if(is_int($requestParam > 0)){
-            
-        //Wyświetl jednego usera
-        $oUser = new User();
-        $userData = $oUser->loadFromDb($requestParam);
-        
-        //var_dump($userData);
-        } else {
-            //Wyświetl wszystkich userów
+        if($requestParam > 0){
+            var_dump("sss");
+            //Wyświetl jednego usera
+            $oUser = new User();
+            $userData = $oUser->loadFromDb($requestParam);
+            //print_r($userData);
+            var_dump($userData);
         }
-        
-        
-    } else {   
-        
+            if($requestParam == null){
+
+                   $allUsers = User::loadAllFromDb();
+                   print_r(json_encode($allUsers));
+                   var_dump($allUsers);
+            }
+       
     }
     
 }
