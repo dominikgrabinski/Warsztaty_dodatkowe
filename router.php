@@ -52,13 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'){
             $oUser = new User();
             $userData = $oUser->loadFromDb($requestParam);
             //print_r($userData);
-            var_dump($userData);
+          //  var_dump($userData);
         }
             if($requestParam == null){
 
                    $allUsers = User::loadAllFromDb();
                    print_r(json_encode($allUsers));
-                   print_r($allUsers);
+                 //  print_r($allUsers);
             }
        
     }
