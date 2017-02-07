@@ -18,7 +18,17 @@ if(isset($arrayRequest[6])){
     die();
 }
 
+if(isset($arrayRequest[7])){
+    $requestParam = intval( $arrayRequest[7]);
+} else {
+    echo "nie podałeś parametru";
+}
 
+//var_dump($requestParam);
+//die();
+
+//var_dump($arrayRequest);
+//var_dump($requestParam);
 
 //$requestClass = $arrayRequest[6];
 //$aarayRequest[0] = router.php
@@ -33,15 +43,25 @@ if(isset($arrayRequest[6])){
 if ($_SERVER['REQUEST_METHOD'] == 'GET'){
     
     if($requestClass == 'user'){
+        
+        //TODO poszukać lepszego rozwiązania
+        if(is_int($requestParam > 0)){
+            
+        //Wyświetl jednego usera
         $oUser = new User();
-        $userData = $oUser->loadFromDb(2);
+        $userData = $oUser->loadFromDb($requestParam);
         
-        var_dump($userData);
+        //var_dump($userData);
+        } else {
+            //Wyświetl wszystkich userów
+        }
         
-    } else {
         
+    } else {   
         
     }
+    
+}
     
 //    if($_SERVER['REQUEST_URI'] == '/CL/Warsztaty_dodatkowe/warsztaty_dodatkowe/Warsztaty_dodatkowe/router.php'){
 //        $newUser = new User();
@@ -52,5 +72,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET'){
     //    echo 'Nie chodzi o usera';
     
         
-    }
+    
     
