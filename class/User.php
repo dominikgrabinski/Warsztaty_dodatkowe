@@ -8,7 +8,7 @@
 
 class User {
     private $id;
-    private $address;
+    private $addressId;
     private $name;
     private $surname;
     private $credits;
@@ -17,7 +17,7 @@ class User {
     
     public function __construct() {
         $this->id = -1;
-        $this->address = '';
+        $this->addressId = null;
         $this->name = '';
         $this->surname = '';
         $this->credits = null;
@@ -28,12 +28,12 @@ class User {
         return $this->id;
     }
     
-    public function getAddress() {
-        return $this->address;
+    public function getAddressId() {
+        return $this->addressId;
     }
     
-    public function setAddress($address){
-        $this->address = $address;
+    public function setAddressId($addressId){
+        $this->addressId = $addressId;
         return true;
     }
     
@@ -72,6 +72,32 @@ class User {
         $this->hashedPassword = $hashedPassword;
         return true;
     }
+    
+    public function loadFromDb($idUser){
+       $sql = "SELECT * FROM user WHERE id = $idUser";
+       
+        if($result = self::$connection->query($sql)){
+            $row = $result->fetch_assoc();
+            
+            $this->id = $row['id'];
+            $this->name = $row['name'];
+            $this->surname = $row['surname'];
+            $this->credits = $row['credits'];
+            $this->hashedPassword = $row['pass'];
+            $this->addressId = $row['address_id'];
+            
+            
+            //Not true becouse usage on view - ze względu na użycie widoku
+            return $row;
+            
+        } else {
+            
+            return false;
+        }
+        
+    }
+    
+    
     
 }
 

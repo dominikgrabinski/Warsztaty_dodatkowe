@@ -6,7 +6,7 @@ $db = 'PACZKOMAT';
 $user = 'root';
 $password = '123';
 
-$connection = new PDO("mysql:host=$host;dbname=$db", $user, $password);
+$connection = new PDO("mysql:host=$host;dbname=$db;", $user, $password);
 
 //FAKE TO DLETE NOW !!!!
 //$connection = 'fake connection';
