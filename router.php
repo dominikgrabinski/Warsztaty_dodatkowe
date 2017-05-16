@@ -1,78 +1,274 @@
 <?php
 
-include 'config/connection.php';
-//Deklaracja zmiennych
-$request = '';
-$arrayRequest = [];
-$requestClass = '';
-$requestParam = null;
+//ładowanie klas
+require ('load.php');
 
-//var_dump($_SERVER['REQUEST_METHOD']);
-//var_dump($_SERVER['REQUEST_URI']);
+//zmienne uniwersalne
+$class = null;
+$returnUrl = null;
 
+//Parsowanie zapytania
 $request = $_SERVER['REQUEST_URI'];
-$arrayRequest = explode('/',$request);
-if(isset($arrayRequest[6])){
-    $requestClass = $arrayRequest[6];
-} else {
-    echo "Nie podałeś nazwy klasy";
-    die();
+$arrayRequest = explode('/', $request);
+
+
+if($arrayRequest[2]){
+    $requestClass = $arrayRequest[2];
+}else {
+    die("Niepoprawny adres");
 }
 
-if(isset($arrayRequest[7])){
-    $requestParam = intval($arrayRequest[7]);
-} else {
-    echo "nie podałeś parametru";
+
+if(isset($arrayRequest[3])){
+    $requestParameter = $arrayRequest[3];
+}else {
+    $requestParameter = null;
 }
 
-//var_dump($requestParam);
-//die();
+//wyświetlenie stron
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
-//var_dump($arrayRequest);
-//var_dump($requestParam);
-
-//$requestClass = $arrayRequest[6];
-//$aarayRequest[0] = router.php
-//$arrayRequest[1] = user.php
-
-//var_dump($request);
-
-//var_dump($requestClass);
-
-
-
-if ($_SERVER['REQUEST_METHOD'] == 'GET'){
+    $array = [];
     
-    if($requestClass == 'user'){
-                
-        //TODO poszukać lepszego rozwiązania
-        if($requestParam > 0){
-            var_dump("sss");
-            //Wyświetl jednego usera
-            $oUser = new User();
-            $userData = $oUser->loadFromDb($requestParam);
-            //print_r($userData);
-          //  var_dump($userData);
+    if($requestParameter == null){
+        //wyświetlenie strony
+    
+        if($requestClass == 'user'){
+            $array = User::loadAllFromDB();
+            
+        }else if($requestClass == 'box'){
+            $array = Box::loadAllFromDB();
+            
+        }else if($requestClass == 'size'){
+            $array = Size::loadAllFromDB();
+            
+        }else if($requestClass == 'address'){
+            $array = Address::loadAllFromDB();
+            
+        }else if($requestClass == 'parcel'){
+            $array = Parcel::loadAllFromDB();
         }
-            if($requestParam == null){
+        
+        
+    } else {
+        //pobranie konkretnego id i zwrócenie w formie json
+        
+        
+        if($requestClass == 'user'){
+            $user = new User();
+            $array = $user->loadFromDB($requestParameter);
+            
+        }else if($requestClass == 'box'){
+            $user = new Box();
+            $array = $user->loadFromDB($requestParameter);
+            
+        }else if($requestClass == 'size'){
+            $user = new Size();
+            $array = $user->loadFromDB($requestParameter);
+            
+        }else if($requestClass == 'address'){
+            $user = new Address();
+            $array = $user->loadFromDB($requestParameter);
+            
+        }else if($requestClass == 'parcel'){
+            $user = new Parcel();
+            $array = $user->loadFromDB($requestParameter);
+        }
+        
+        
+    }
+    
+    echo json_encode($array);
+    return;
+}
 
-                   $allUsers = User::loadAllFromDb();
-                   print_r(json_encode($allUsers));
-                 //  print_r($allUsers);
-            }
-       
+//utworzenie klasy i przekazanie parametrów
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    switch ($requestClass) {
+        case 'user':
+            $address_id =   $_POST['address_id'];
+            $name =         $_POST['name'];
+            $surname=       $_POST['surname'];
+            $credits =      $_POST['credits'];
+            $pass =         $_POST['pass'];
+            
+            $class = new User();
+            $class->setAddressId($address_id);
+            $class->setName($name);
+            $class->setSurname($surname);
+            $class->setCredits($credits);
+            $class->setPass($pass);
+            break;
+        
+        case 'box':
+            $address_id = $_POST['address_id'];
+            $size_id = $_POST['size_id'];
+            $class = new Box();
+            $class->setAddressId($address_id);
+            $class->setSizeId($size_id);
+            break;
+        
+        case 'size':
+            $size = $_POST['size'];
+            $price = $_POST['price'];
+            $class = new Size();
+            $class->setSize($size);
+            $class->setPrice($price);
+            break;
+        
+        case 'address':
+            $city   = $_POST['city'];
+            $code   = $_POST['code'];
+            $street = $_POST['street'];
+            $flat   = $_POST['flat'];
+            $class = new Address();
+            
+            $class->setCity($city);
+            $class->setCode($code);
+            $class->setStreet($street);
+            $class->setFlat($flat);
+            break;
+        
+        case 'parcel':
+            $address_id = $_POST['address_id'];
+            $size_id = $_POST['size_id'];
+            $user_id = $_POST['user_id'];
+            $class = new Parcel();
+            $class->setAddressId($address_id);
+            $class->setSizeId($size_id);
+            $class->setUserId($user_id);
+            break;
+        
+        default:
+            break;
+    }
+    
+    if( $class->saveToDB() == false ) {
+        return false;
+    }else {
+        return true;
+    }
+
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+    parse_str(file_get_contents("php://input"), $put_vars);
+    $id = $put_vars['id'];
+
+    switch ($requestClass) {
+        case 'user':
+            $address_id =   $put_vars['address_id'];
+            $name =         $put_vars['name'];
+            $surname=       $put_vars['surname'];
+            $credits =      $put_vars['credits'];
+            // $pass =         $put_vars['pass'];
+            
+            $class = new User();
+            $class->loadFromDB($id);
+            
+            $class->setAddressId($address_id);
+            $class->setName($name);
+            $class->setSurname($surname);
+            $class->setCredits($credits);
+            // $class->setPass($pass);
+            break;
+        
+        case 'box':
+            $address_id = $put_vars['address_id'];
+            $size_id = $put_vars['size_id'];
+            $class = new Box();
+            $class->loadFromDB($id);
+            $class->setAddressId($address_id);
+            $class->setSizeId($size_id);
+            break;
+        
+        case 'size':
+            $size = $put_vars['size'];
+            $price = $put_vars['price'];
+            $class = new Size();
+            $class->loadFromDB($id);
+            $class->setSize($size);
+            $class->setPrice($price);
+            break;
+        
+        case 'address':
+            $city   = $put_vars['city'];
+            $code   = $put_vars['code'];
+            $street = $put_vars['street'];
+            $flat   = $put_vars['flat'];
+            $class = new Address();
+            $class->loadFromDB($id);
+            
+            $class->setCity($city);
+            $class->setCode($code);
+            $class->setStreet($street);
+            $class->setFlat($flat);
+            break;
+        
+        case 'parcel':
+            $address_id = $put_vars['address_id'];
+            $size_id = $put_vars['size_id'];
+            $user_id = $put_vars['user_id'];
+            $class = new Parcel();
+            $class->loadFromDB($id);
+            $class->setAddressId($address_id);
+            $class->setSizeId($size_id);
+            $class->setUserId($user_id);
+            break;
+        
+        default:
+            break;
+    }
+
+    if( $class->update() == false ) {
+        return false;
+    }else {
+        return true;
     }
     
 }
-    
-//    if($_SERVER['REQUEST_URI'] == '/CL/Warsztaty_dodatkowe/warsztaty_dodatkowe/Warsztaty_dodatkowe/router.php'){
-//        $newUser = new User();
-//        
-//    //    echo 'Chodzi o usera';
-//    }else{
+
+if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+     parse_str(file_get_contents("php://input"), $put_vars);
+     $id = $put_vars['id'];
+
+     switch ($requestClass) {
+        case 'user':
+            $class = new User();
+            $class->loadFromDB($id);
+            break;
         
-    //    echo 'Nie chodzi o usera';
-    
+        case 'box':
+            $class = new Box();
+            $class->loadFromDB($id);
+            break;
         
+        case 'size':
+            $class = new Size();
+            $class->loadFromDB($id);
+            break;
+        
+        case 'address':
+            $class = new Address();
+            $class->loadFromDB($id);
+            break;
+        
+        case 'parcel':
+            $class = new Parcel();
+            $class->loadFromDB($id);
+            break;
+        
+        default:
+            break;
+    }
+
+    if( $class->deleteFromDB() == false ) {
+        return false;
+    }else {
+        return true;
+    }
     
-    
+}
+
+
